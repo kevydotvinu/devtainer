@@ -4,7 +4,7 @@ ARG USER
 ARG UID
 ARG GO_VERSION=go
 
-RUN yum -y install git gcc make vim zip xz curl jq gnupg2 tmux zsh sudo langpacks-en glibc-all-langpacks && \
+RUN yum -y install git gcc make vim zip xz curl jq gnupg2 tmux zsh sudo langpacks-en glibc-all-langpacks libvirt-devel && \
     useradd -u ${UID} -ms /bin/zsh ${USER} && \
     echo "${USER} ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/${USER}
 
