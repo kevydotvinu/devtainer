@@ -40,9 +40,9 @@ go-devtainer-run:
 
 .PHONY: metallb-metallb
 
-metallb: metallb-env go-devtainer-build go-devtainer-run
+metallb-metallb: metallb-env go-devtainer-build go-devtainer-run
 
-metallb-env:
+metallb-metallb-env:
 	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
 	@$(eval WORKDIR := ../metallb-metallb)
 	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
