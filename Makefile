@@ -40,7 +40,7 @@ go-devtainer-run:
 
 .PHONY: metallb-metallb
 
-metallb-metallb: metallb-env go-devtainer-build go-devtainer-run
+metallb-metallb: metallb-metallb-env go-devtainer-build go-devtainer-run
 
 metallb-metallb-env:
 	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
