@@ -45,8 +45,8 @@ metallb: metallb-env go-devtainer-build go-devtainer-run
 metallb-env:
 	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
 	@$(eval WORKDIR := ../metallb-metallb)
-	@$(eval FORK := https://github.com/kevydotvinu/metallb-metallb)
-	@$(eval UPSTREAM := https://github.com/metallb/metallb)
+	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
+	@$(eval UPSTREAM := git@github.com:metallb/metallb)
 
 .PHONY: openshift-installer
 
@@ -55,8 +55,8 @@ openshift-installer: openshift-installer-env go-devtainer-build go-devtainer-run
 openshift-installer-env:
 	@$(eval DOCKERFILE := Containerfile.openshift-installer)
 	@$(eval WORKDIR := ../openshift-installer)
-	@$(eval FORK := https://github.com/kevydotvinu/openshift-installer)
-	@$(eval UPSTREAM := https://github.com/openshift/installer)
+	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
+	@$(eval UPSTREAM := git@github.com:openshift/installer)
 
 .PHONY: openshift-oc
 
@@ -65,5 +65,5 @@ openshift-oc: openshift-oc-env go-devtainer-build go-devtainer-run
 openshift-oc-env:
 	@$(eval DOCKERFILE := Containerfile.openshift-oc)
 	@$(eval WORKDIR := ../openshift-oc)
-	@$(eval FORK := https://github.com/kevydotvinu/openshift-oc)
-	@$(eval UPSTREAM := https://github.com/openshift/oc)
+	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
+	@$(eval UPSTREAM := git@github.com:openshift/oc)
