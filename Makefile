@@ -2,9 +2,6 @@ SHELL=/bin/bash
 DIR=$(shell pwd)
 USER=$(shell id -un)
 UID=$(shell id -u)
-METALLB_IMAGE=localhost/kevydotvinu/go-devtainer-metallb
-INSTALLER_IMAGE=localhost/kevydotvinu/go-devtainer-installer
-CONTAINERFILE=${DIR}/Containerfile.ubuntu
 
 ifeq ($(USER), 0)
         PODMAN=podman
@@ -12,68 +9,61 @@ else
         PODMAN=sudo podman
 endif
 
-check-env:
-ifndef WORKDIR
-	$(error WORKDIR is undefined | Set repository path as volume)
-endif
-
-.PHONY: go-devtainer
-go-devtainer: build run
-
-build:
-	${PODMAN} build . -f ${DOCKERFILE} -t ${IMAGE} --no-cache --build-arg USER=${USER} --build-arg UID=${UID} --build-arg GO_VERSION=go
-
-run: check-env
-	@${PODMAN} run --rm --name go-devtainer --user ${USER} --hostname go-devtainer -it -v ${WORKDIR}:/home/${USER}/code/src/github.com/kevydotvinu/$$(basename ${WORKDIR}) ${IMAGE}
-
-.PHONY: openshift-installer-build
-
-openshift-installer-build:
-	@$(eval DOCKERFILE := Containerfile.openshift-installer)
-	@${PODMAN} build --file ${DOCKERFILE} \
-		         --tag ${INSTALLER_IMAGE} \
-			 --no-cache \
-			 --build-arg USER=${USER} \
-			 --build-arg UID=${UID} \
-			 --build-arg GO_VERSION=go \
-			 .
-
-.PHONY: openshift-installer-run
-
-openshift-installer-run: check-env
-	@${PODMAN} run --rm \
-		       --name go-devtainer \
-		       --user ${USER} \
-		       --hostname go-devtainer \
-		       --interactive \
-		       --tty \
-		       --volume ${WORKDIR}:/home/${USER}/code/src/github.com/kevydotvinu/$$(basename ${WORKDIR}) \
-		       ${INSTALLER_IMAGE}
-
-.PHONY: metallb-build
-
-metallb-build:
-	@$(eval DOCKERFILE := Containerfile.metallb)
+go-devtainer-build:
 	@${PODMAN} build --security-opt label=disable \
 		         --file ${DOCKERFILE} \
-			 --tag ${METALLB_IMAGE} \
-			 --no-cache \
+			 --tag localhost/kevydotvinu/$$(basename ${WORKDIR}) \
 			 --build-arg USER=${USER} \
 			 --build-arg UID=${UID} \
 			 --build-arg GO_VERSION=go \
 			 .
 
-.PHONY: metallb-run
-
-metallb-run: check-env
+go-devtainer-run:
+	@ls ${WORKDIR} || git clone ${FORK} ${WORKDIR}
+	git -C ${WORKDIR} checkout $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	@git -C ${WORKDIR} remote add upstream ${UPSTREAM} || true
+	@git -C ${WORKDIR} fetch upstream $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	@git -C ${WORKDIR} merge upstream/$$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	@git -C ${WORKDIR} --no-pager branch -a
 	@${PODMAN} run --security-opt label=disable \
-		       --rm --name go-devtainer \
+		       --rm --name go-devtainer-$$(basename ${WORKDIR}) \
 		       --net host \
 		       --user ${USER} \
-		       --hostname go-devtainer \
+		       --hostname go-devtainer-$$(basename ${WORKDIR}) \
 		       --interactive \
 		       --tty \
 		       --volume ${HOME}/go:/home/${USER}/go \
 		       --volume ${WORKDIR}:/home/${USER}/code/src/go.universe.tf/$$(basename ${WORKDIR}) \
 		       --volume ${HOME}/.kube:/home/${USER}/.kube \
-		       ${METALLB_IMAGE}
+		       --workdir /home/${USER}/code/src/go.universe.tf/$$(basename ${WORKDIR}) \
+		       localhost/kevydotvinu/$$(basename ${WORKDIR})
+
+.PHONY: metallb-metallb
+
+metallb: metallb-env go-devtainer-build go-devtainer-run
+
+metallb-env:
+	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
+	@$(eval WORKDIR := ../metallb-metallb)
+	@$(eval FORK := https://github.com/kevydotvinu/metallb-metallb)
+	@$(eval UPSTREAM := https://github.com/metallb/metallb)
+
+.PHONY: openshift-installer
+
+openshift-installer: openshift-installer-env go-devtainer-build go-devtainer-run
+
+openshift-installer-env:
+	@$(eval DOCKERFILE := Containerfile.openshift-installer)
+	@$(eval WORKDIR := ../openshift-installer)
+	@$(eval FORK := https://github.com/kevydotvinu/openshift-installer)
+	@$(eval UPSTREAM := https://github.com/openshift/installer)
+
+.PHONY: openshift-oc
+
+openshift-oc: openshift-oc-env go-devtainer-build go-devtainer-run
+
+openshift-oc-env:
+	@$(eval DOCKERFILE := Containerfile.openshift-oc)
+	@$(eval WORKDIR := ../openshift-oc)
+	@$(eval FORK := https://github.com/kevydotvinu/openshift-oc)
+	@$(eval UPSTREAM := https://github.com/openshift/oc)
