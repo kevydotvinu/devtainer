@@ -20,11 +20,11 @@ go-devtainer-build:
 
 go-devtainer-run:
 	@ls ${WORKDIR} || git clone ${FORK} ${WORKDIR}
-	git -C ${WORKDIR} checkout $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
-	@git -C ${WORKDIR} remote add upstream ${UPSTREAM} || true
-	@git -C ${WORKDIR} fetch upstream $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
-	@git -C ${WORKDIR} merge upstream/$$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
-	@git -C ${WORKDIR} --no-pager branch -a
+	@git -C ${WORKDIR} checkout $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	git -C ${WORKDIR} remote add upstream ${UPSTREAM} || true
+	git -C ${WORKDIR} fetch upstream $$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	git -C ${WORKDIR} merge upstream/$$(git -C ${WORKDIR} branch -l master main | sed 's/^* //')
+	git -C ${WORKDIR} --no-pager branch -a
 	@${PODMAN} run --security-opt label=disable \
 		       --rm --name go-devtainer-$$(basename ${WORKDIR}) \
 		       --net host \
@@ -35,6 +35,7 @@ go-devtainer-run:
 		       --volume ${HOME}/go:/home/${USER}/go \
 		       --volume ${WORKDIR}:/home/${USER}/code/src/go.universe.tf/$$(basename ${WORKDIR}) \
 		       --volume ${HOME}/.kube:/home/${USER}/.kube \
+		       --volume /run/user/${UID}/gnupg:/home/${USER}/.gnupg \
 		       --workdir /home/${USER}/code/src/go.universe.tf/$$(basename ${WORKDIR}) \
 		       localhost/kevydotvinu/$$(basename ${WORKDIR})
 
@@ -43,27 +44,27 @@ go-devtainer-run:
 metallb-metallb: metallb-metallb-env go-devtainer-build go-devtainer-run
 
 metallb-metallb-env:
-	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
-	@$(eval WORKDIR := ../metallb-metallb)
-	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
-	@$(eval UPSTREAM := git@github.com:metallb/metallb)
+	@$(eval WORKDIR := ../$(subst -env,,$@))
+	@$(eval DOCKERFILE := Containerfile.$(subst -env,,$@))
+	@$(eval FORK := git@github.com:kevydotvinu/$(subst -env,,$@))
+	@$(eval UPSTREAM := git@github.com:$(subst -,/,$(subst -env,,$@)))
 
 .PHONY: openshift-installer
 
 openshift-installer: openshift-installer-env go-devtainer-build go-devtainer-run
 
 openshift-installer-env:
-	@$(eval DOCKERFILE := Containerfile.openshift-installer)
-	@$(eval WORKDIR := ../openshift-installer)
-	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
-	@$(eval UPSTREAM := git@github.com:openshift/installer)
+	@$(eval WORKDIR := ../$(subst -env,,$@))
+	@$(eval DOCKERFILE := Containerfile.$(subst -env,,$@))
+	@$(eval FORK := git@github.com:kevydotvinu/$(subst -env,,$@))
+	@$(eval UPSTREAM := git@github.com:$(subst -,/,$(subst -env,,$@)))
 
 .PHONY: openshift-oc
 
 openshift-oc: openshift-oc-env go-devtainer-build go-devtainer-run
 
 openshift-oc-env:
-	@$(eval DOCKERFILE := Containerfile.openshift-oc)
-	@$(eval WORKDIR := ../openshift-oc)
-	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
-	@$(eval UPSTREAM := git@github.com:openshift/oc)
+	@$(eval WORKDIR := ../$(subst -env,,$@))
+	@$(eval DOCKERFILE := Containerfile.$(subst -env,,$@))
+	@$(eval FORK := git@github.com:kevydotvinu/$(subst -env,,$@))
+	@$(eval UPSTREAM := git@github.com:$(subst -,/,$(subst -env,,$@)))
