@@ -41,7 +41,7 @@ endef
 .PHONY: help $(TARGETS)
 
 help:
-	@echo "Available targets:"
+	@echo "AVAILABLE TARGETS"
 	@echo ${TARGETS} | tr ' ' '\n'
 
 TARGETS := metallb-metallb openshift-installer openshift-oc
