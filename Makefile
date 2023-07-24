@@ -10,10 +10,6 @@ else
 endif
 
 define go-devtainer
-	@$(eval WORKDIR := ../$(subst -env,,$@))
-	@$(eval DOCKERFILE := Containerfile.$(subst -env,,$@))
-	@$(eval FORK := git@github.com:kevydotvinu/$(subst -env,,$@))
-	@$(eval UPSTREAM := git@github.com:$(subst -,/,$(subst -env,,$@)))
 	@$(PODMAN) build --security-opt label=disable \
 					--file $(DOCKERFILE) \
 					--tag localhost/kevydotvinu/$(notdir $(WORKDIR)) \
@@ -42,9 +38,31 @@ define go-devtainer
 					localhost/kevydotvinu/$(notdir $(WORKDIR))
 endef
 
+.PHONY: help $(TARGETS)
+
+help:
+	@echo "Available targets:"
+	@echo ${TARGETS} | tr ' ' '\n'
+
 TARGETS := metallb-metallb openshift-installer openshift-oc
 
-$(TARGETS):
+$(TARGETS): % : %-env
 	$(go-devtainer)
 
-.PHONY: $(TARGETS) $(addsuffix -env,$(TARGETS))
+metallb-metallb-env:
+	@$(eval WORKDIR := ${HOME}/code/src/go.universe.tf/metallb)
+	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
+	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
+	@$(eval UPSTREAM := git@github.com:metallb/metallb)
+
+openshift-installer-env:
+	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-installer)
+	@$(eval DOCKERFILE := Containerfile.openshift-installer)
+	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
+	@$(eval UPSTREAM := git@github.com:openshift/installer)
+
+openshift-oc-env:
+	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-oc)
+	@$(eval DOCKERFILE := Containerfile.openshift-oc)
+	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
+	@$(eval UPSTREAM := git@github.com:openshift/oc)
