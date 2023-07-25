@@ -5,7 +5,8 @@ ARG UID
 ARG GO_VERSION=go
 
 RUN apt-get update && \
-    apt-get -y install git gcc make vim zip xz-utils curl jq gpgconf tmux zsh language-pack-en sudo pip gnupg2 && \
+    apt-get --no-install-recommends -y install git gcc libc-dev make vim zip xz-utils curl jq gpgconf tmux zsh language-pack-en sudo pip gnupg2 && \
+    rm -rf /var/lib/apt/lists/* && \
     pip install invoke semver pyyaml && \
     useradd -u ${UID} -ms /bin/zsh ${USER} && \
     echo "${USER} ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/${USER} && \
