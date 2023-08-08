@@ -1,5 +1,5 @@
-# Go Devtainer
-This creates a development container for the project.
+# Devtainer
+This creates a standalone container for the development.
 
 ## MetalLB
 ```

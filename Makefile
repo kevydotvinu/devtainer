@@ -9,7 +9,7 @@ else
 	PODMAN := sudo podman
 endif
 
-define go-devtainer
+define devtainer
 	@$(PODMAN) build --security-opt label=disable \
 					--file $(DOCKERFILE) \
 					--tag localhost/kevydotvinu/$(notdir $(WORKDIR)) \
@@ -24,10 +24,10 @@ define go-devtainer
 	git -C $(WORKDIR) merge upstream/$$(git -C $(WORKDIR) branch -l master main | sed 's/^* //')
 	git -C $(WORKDIR) --no-pager branch -a
 	@$(PODMAN) run --security-opt label=disable \
-					--rm --name go-devtainer-$(notdir $(WORKDIR)) \
+					--rm --name devtainer-$(notdir $(WORKDIR)) \
 					--net host \
 					--user $(USER) \
-					--hostname go-devtainer-$(notdir $(WORKDIR)) \
+					--hostname devtainer-$(notdir $(WORKDIR)) \
 					--interactive \
 					--tty \
 					--volume $(HOME)/go:/home/$(USER)/go \
@@ -47,22 +47,22 @@ help:
 TARGETS := metallb-metallb openshift-installer openshift-oc
 
 $(TARGETS): % : %-env
-	$(go-devtainer)
+	$(devtainer)
 
 metallb-metallb-env:
 	@$(eval WORKDIR := ${HOME}/code/src/go.universe.tf/metallb)
-	@$(eval DOCKERFILE := Containerfile.metallb-metallb)
+	@$(eval DOCKERFILE := metallb-metallb/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
 	@$(eval UPSTREAM := git@github.com:metallb/metallb)
 
 openshift-installer-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-installer)
-	@$(eval DOCKERFILE := Containerfile.openshift-installer)
+	@$(eval DOCKERFILE := openshift-installer/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
 	@$(eval UPSTREAM := git@github.com:openshift/installer)
 
 openshift-oc-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-oc)
-	@$(eval DOCKERFILE := Containerfile.openshift-oc)
+	@$(eval DOCKERFILE := openshift-oc/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
 	@$(eval UPSTREAM := git@github.com:openshift/oc)
