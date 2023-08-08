@@ -31,10 +31,10 @@ define go-devtainer
 					--interactive \
 					--tty \
 					--volume $(HOME)/go:/home/$(USER)/go \
-					--volume $(WORKDIR):/home/$(USER)/code/src/go.universe.tf/$(notdir $(WORKDIR)) \
+					--volume $(WORKDIR):$(WORKDIR) \
 					--volume $(HOME)/.kube:/home/$(USER)/.kube \
 					--volume /run/user/$(UID)/gnupg:/home/$(USER)/.gnupg \
-					--workdir /home/$(USER)/code/src/go.universe.tf/$(notdir $(WORKDIR)) \
+					--workdir $(WORKDIR) \
 					localhost/kevydotvinu/$(notdir $(WORKDIR))
 endef
 
