@@ -24,10 +24,10 @@ define devtainer
 	git -C $(WORKDIR) merge upstream/$$(git -C $(WORKDIR) branch -l master main | sed 's/^* //')
 	git -C $(WORKDIR) --no-pager branch -a
 	@$(PODMAN) run --security-opt label=disable \
-					--rm --name devtainer-$(notdir $(WORKDIR)) \
+					--rm --name devtainer \
 					--net host \
 					--user $(USER) \
-					--hostname devtainer-$(notdir $(WORKDIR)) \
+					--hostname devtainer \
 					--interactive \
 					--tty \
 					--volume $(HOME)/go:/home/$(USER)/go \
