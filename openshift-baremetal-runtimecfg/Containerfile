@@ -19,7 +19,8 @@ RUN yum -y install git \
                    glibc-all-langpacks \
                    gpgme-devel \
                    libassuan-devel \
-                   ripgrep && \
+                   ripgrep \
+                   iproute && \
     useradd -u ${UID} -ms /bin/zsh ${USER} && \
     echo "${USER} ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/${USER}
 

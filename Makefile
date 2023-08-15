@@ -35,6 +35,8 @@ define devtainer
 					--tty \
 					--volume $(HOME)/go:/home/$(USER)/go \
 					--volume $(WORKDIR):$(WORKDIR) \
+					--volume $(PWD)/$(notdir $(WORKDIR))/Makefile:/home/$(USER)/Makefile \
+					--volume $(PWD)/$(notdir $(WORKDIR))/.zshenv:/home/$(USER)/.zshenv \
 					--volume $(HOME)/.kube:/home/$(USER)/.kube \
 					--volume /run/user/$(UID)/gnupg:/home/$(USER)/.gnupg \
 					--workdir $(WORKDIR) \
@@ -54,24 +56,25 @@ $(TARGETS): % : %-env
 
 metallb-metallb-env:
 	@$(eval WORKDIR := ${HOME}/code/src/go.universe.tf/metallb)
-	@$(eval CONTAINERFILE := metallb-metallb/Containerfile)
+	@$(eval CONTAINERFILE := ${PWD}/metallb-metallb/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
 	@$(eval UPSTREAM := git@github.com:metallb/metallb)
 
 openshift-installer-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-installer)
-	@$(eval CONTAINERFILE := openshift-installer/Containerfile)
+	@$(eval CONTAINERFILE := ${PWD}/openshift-installer/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
 	@$(eval UPSTREAM := git@github.com:openshift/installer)
 
 openshift-oc-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-oc)
-	@$(eval CONTAINERFILE := openshift-oc/Containerfile)
+	@$(eval CONTAINERFILE := ${PWD}/openshift-oc/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
 	@$(eval UPSTREAM := git@github.com:openshift/oc)
 
 openshift-baremetal-runtimecfg-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-baremetal-runtimecfg)
-	@$(eval CONTAINERFILE := openshift-baremetal-runtimecfg/Containerfile)
+	@$(eval CONTAINERFILE := ${PWD}/openshift-baremetal-runtimecfg/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-baremetal-runtimecfg)
 	@$(eval UPSTREAM := git@github.com:openshift/baremetal-runtimecfg)
+	@$(eval RUNOPTS := --cap-add=NET_ADMIN)
