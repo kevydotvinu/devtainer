@@ -2,6 +2,8 @@ SHELL := /bin/bash
 DIR := $(shell pwd)
 USER := $(shell id -un)
 UID := $(shell id -u)
+BUILDOPTS ?=
+RUNOPTS ?=
 
 ifeq ($(USER), 0)
 	PODMAN := podman
@@ -11,7 +13,8 @@ endif
 
 define devtainer
 	@$(PODMAN) build --security-opt label=disable \
-					--file $(DOCKERFILE) \
+					${BUILDOPTS} \
+					--file $(CONTAINERFILE) \
 					--tag localhost/kevydotvinu/$(notdir $(WORKDIR)) \
 					--build-arg USER=$(USER) \
 					--build-arg UID=$(UID) \
@@ -24,6 +27,7 @@ define devtainer
 	git -C $(WORKDIR) merge upstream/$$(git -C $(WORKDIR) branch -l master main | sed 's/^* //')
 	git -C $(WORKDIR) --no-pager branch -a
 	@$(PODMAN) run --security-opt label=disable \
+					${RUNOPTS} \
 					--rm --name devtainer \
 					--user $(USER) \
 					--hostname devtainer \
@@ -50,24 +54,24 @@ $(TARGETS): % : %-env
 
 metallb-metallb-env:
 	@$(eval WORKDIR := ${HOME}/code/src/go.universe.tf/metallb)
-	@$(eval DOCKERFILE := metallb-metallb/Containerfile)
+	@$(eval CONTAINERFILE := metallb-metallb/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/metallb-metallb)
 	@$(eval UPSTREAM := git@github.com:metallb/metallb)
 
 openshift-installer-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-installer)
-	@$(eval DOCKERFILE := openshift-installer/Containerfile)
+	@$(eval CONTAINERFILE := openshift-installer/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-installer)
 	@$(eval UPSTREAM := git@github.com:openshift/installer)
 
 openshift-oc-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/openshift-oc)
-	@$(eval DOCKERFILE := openshift-oc/Containerfile)
+	@$(eval CONTAINERFILE := openshift-oc/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
 	@$(eval UPSTREAM := git@github.com:openshift/oc)
 
 openshift-baremetal-runtimecfg-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/baremetal-runtimecfg)
-	@$(eval DOCKERFILE := openshift-oc/Containerfile)
+	@$(eval CONTAINERFILE := openshift-oc/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-baremetal-runtimecfg)
 	@$(eval UPSTREAM := git@github.com:openshift/baremetal-runtimecfg)
