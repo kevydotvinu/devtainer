@@ -72,6 +72,6 @@ openshift-oc-env:
 
 openshift-baremetal-runtimecfg-env:
 	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/baremetal-runtimecfg)
-	@$(eval CONTAINERFILE := openshift-oc/Containerfile)
+	@$(eval CONTAINERFILE := openshift-baremetal-runtimecfg/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-baremetal-runtimecfg)
 	@$(eval UPSTREAM := git@github.com:openshift/baremetal-runtimecfg)
