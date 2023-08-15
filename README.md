@@ -1,15 +1,7 @@
 # Devtainer
 This creates a standalone container for the development.
 
-## MetalLB
+## List available targets
 ```
-make metallb-metallb
-```
-## OpenShift Client
-```
-make openshift-oc
-```
-## OpenShift Installer
-```
-make openshift-installer
+make
 ```
