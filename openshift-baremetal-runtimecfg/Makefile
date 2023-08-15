@@ -14,3 +14,8 @@ ecmp6:
 
 build:
 	GO111MODULE=on go build --mod=vendor -o build ./cmd/...                                                  
+
+.PHONY: runtimecfg
+
+runtimecfg:
+	build/runtimecfg node-ip -6 show
