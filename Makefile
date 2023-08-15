@@ -25,7 +25,6 @@ define devtainer
 	git -C $(WORKDIR) --no-pager branch -a
 	@$(PODMAN) run --security-opt label=disable \
 					--rm --name devtainer \
-					--net host \
 					--user $(USER) \
 					--hostname devtainer \
 					--interactive \
