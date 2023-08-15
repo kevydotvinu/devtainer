@@ -44,7 +44,7 @@ help:
 	@echo "AVAILABLE TARGETS"
 	@echo ${TARGETS} | tr ' ' '\n'
 
-TARGETS := metallb-metallb openshift-installer openshift-oc
+TARGETS := metallb-metallb openshift-installer openshift-oc openshift-baremetal-runtimecfg
 
 $(TARGETS): % : %-env
 	$(devtainer)
@@ -66,3 +66,9 @@ openshift-oc-env:
 	@$(eval DOCKERFILE := openshift-oc/Containerfile)
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-oc)
 	@$(eval UPSTREAM := git@github.com:openshift/oc)
+
+openshift-baremetal-runtimecfg-env:
+	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/baremetal-runtimecfg)
+	@$(eval DOCKERFILE := openshift-oc/Containerfile)
+	@$(eval FORK := git@github.com:kevydotvinu/openshift-baremetal-runtimecfg)
+	@$(eval UPSTREAM := git@github.com:openshift/baremetal-runtimecfg)

@@ -1,0 +1,20 @@
+FROM fedora
+
+ARG USER
+ARG UID
+ARG GO_VERSION=go
+
+RUN yum -y install git gcc make vim zip xz curl jq gnupg2 tmux zsh sudo langpacks-en glibc-all-langpacks libvirt-devel krb5-devel gpgme-devel libassuan-devel && \
+    useradd -u ${UID} -ms /bin/zsh ${USER} && \
+    echo "${USER} ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/${USER}
+
+WORKDIR /home/${USER}
+
+USER ${USER}
+
+RUN git config --global --add safe.directory /host && \
+    git clone https://github.com/kevydotvinu/dotfiles && \
+    cd dotfiles && make nvim && make ohmyzsh && make go GO_VERSION=${GO_VERSION} && make git && \
+    gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 14D8B9397A8F10DA44B00FE3B5CCF2B7D917627C
+
+CMD /usr/bin/zsh
