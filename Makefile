@@ -15,7 +15,7 @@ define devtainer
 	@$(PODMAN) build --security-opt label=disable \
 					${BUILDOPTS} \
 					--file $(CONTAINERFILE) \
-					--tag localhost/kevydotvinu/$(notdir $(WORKDIR)) \
+					--tag localhost/kevydotvinu/$(notdir $(FORK)) \
 					--build-arg USER=$(USER) \
 					--build-arg UID=$(UID) \
 					--build-arg GO_VERSION=go \
@@ -28,19 +28,20 @@ define devtainer
 	git -C $(WORKDIR) --no-pager branch -a
 	@$(PODMAN) run --security-opt label=disable \
 					${RUNOPTS} \
-					--rm --name devtainer \
+					--rm \
+					--name $(notdir $(FORK)) \
 					--user $(USER) \
 					--hostname devtainer \
 					--interactive \
 					--tty \
 					--volume $(HOME)/go:/home/$(USER)/go \
 					--volume $(WORKDIR):$(WORKDIR) \
-					--volume $(PWD)/$(notdir $(WORKDIR))/Makefile:/home/$(USER)/Makefile \
-					--volume $(PWD)/$(notdir $(WORKDIR))/.zshenv:/home/$(USER)/.zshenv \
+					--volume $(PWD)/$(notdir $(FORK))/Makefile:/home/$(USER)/Makefile \
+					--volume $(PWD)/$(notdir $(FORK))/.zshenv:/home/$(USER)/.zshenv \
 					--volume $(HOME)/.kube:/home/$(USER)/.kube \
 					--volume /run/user/$(UID)/gnupg:/home/$(USER)/.gnupg \
 					--workdir $(WORKDIR) \
-					localhost/kevydotvinu/$(notdir $(WORKDIR))
+					localhost/kevydotvinu/$(notdir $(FORK))
 endef
 
 .PHONY: help $(TARGETS)
