@@ -50,7 +50,7 @@ help:
 	@echo "AVAILABLE TARGETS"
 	@echo ${TARGETS} | tr ' ' '\n'
 
-TARGETS := metallb-metallb openshift-installer openshift-oc openshift-baremetal-runtimecfg
+TARGETS := metallb-metallb openshift-installer openshift-oc openshift-baremetal-runtimecfg kevydotvinu.github.io
 
 $(TARGETS): % : %-env
 	$(devtainer)
@@ -79,3 +79,10 @@ openshift-baremetal-runtimecfg-env:
 	@$(eval FORK := git@github.com:kevydotvinu/openshift-baremetal-runtimecfg)
 	@$(eval UPSTREAM := git@github.com:openshift/baremetal-runtimecfg)
 	@$(eval RUNOPTS := --cap-add=NET_ADMIN)
+
+kevydotvinu.github.io-env:
+	@$(eval WORKDIR := ${HOME}/code/src/github.com/kevydotvinu/kevydotvinu.github.io)
+	@$(eval CONTAINERFILE := ${PWD}/kevydotvinu.github.io/Containerfile)
+	@$(eval FORK := git@github.com:kevydotvinu/kevydotvinu.github.io)
+	@$(eval UPSTREAM := git@github.com:kevydotvinu/kevydotvinu.github.io)
+	@$(eval RUNOPTS := --net=host)
